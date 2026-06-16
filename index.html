@@ -6,52 +6,116 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GradePath – Academic Planning</title>
-  <!-- Google Font – Inter (clean, modern) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Google Fonts – Inter for body, DM Serif Display for headings -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <!-- Hero / Header ---------------------------------------------------- -->
-  <header class="header">
-    <div class="container">
-      <h1 class="title">GradePath</h1>
-      <p class="subtitle">Your personal academic planning companion.</p>
-    </div>
-  </header>
+  <!-- ==================== Navigation Bar ==================== -->
+  <!-- Clean white navbar with logo left, links center, buttons right -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <!-- Logo -->
+      <a href="#" class="logo">
+        <span class="logo-icon">📊</span> Gradepath
+      </a>
 
-  <!-- Main Content ------------------------------------------------------ -->
-  <main class="container">
-    <!-- Brief description ------------------------------------------------ -->
-    <section class="description">
-      <p>Plan your academic journey with tools to predict internal marks, set CGPA goals, and stay on track.</p>
-    </section>
-
-    <!-- Feature cards ---------------------------------------------------- -->
-    <section class="features">
-      <article class="card">
-        <h2>Internal Marks Predictor</h2>
-        <p>Estimate your semester marks based on internal exam scores.</p>
-      </article>
-      <article class="card">
-        <h2>CGPA Goal Planner</h2>
-        <p>Set and track your CGPA targets throughout your study journey.</p>
-      </article>
-    </section>
-
-    <!-- Coming soon ------------------------------------------------------ -->
-    <section class="coming-soon">
-      <h2>Coming Soon</h2>
-      <ul>
-        <li>Final Exam Marks Requirement Calculator</li>
-        <li>Student Dashboard</li>
+      <!-- Navigation Links -->
+      <ul class="nav-menu" id="nav-menu">
+        <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+        <li class="nav-item"><a href="#features" class="nav-link">Features</a></li>
+        <li class="nav-item"><a href="#coming-soon" class="nav-link">Coming Soon</a></li>
       </ul>
-    </section>
-  </main>
 
-  <!-- Footer ----------------------------------------------------------- -->
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <a href="#" class="btn btn-filled">Login</a>
+        <a href="#" class="btn btn-outline">Sign Up</a>
+      </div>
+
+      <!-- Hamburger for mobile -->
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==================== Hero / Home Section ==================== -->
+  <!-- Large centered heading + description + single CTA button -->
+  <section class="hero" id="home">
+    <h1 class="hero-title">
+      Smart Academic Planning<br />Platform for Modern Students
+    </h1>
+    <p class="hero-subtitle">
+      Planning your grades shouldn't be stressful or guesswork. GradePath helps
+      students <strong>predict internal marks</strong>, calculate the scores needed for
+      final exams, and <strong>plan CGPA goals</strong> — all in one simple, free tool
+      built for <strong>every student</strong>.
+    </p>
+    <a href="#features" class="btn btn-cta">Get Started </a>
+  </section>
+
+  <!-- ==================== About / Description ==================== -->
+  <section class="about" id="about">
+    <div class="about-container">
+      <h2 class="section-title">Why GradePath?</h2>
+      <p class="about-text">
+        Many students struggle to estimate their semester results and figure out
+        the CGPA they need for scholarships, internships, or graduation. GradePath
+        solves these problems by offering simple, accurate academic tools — no
+        heavy frameworks, no sign‑ups required. It loads instantly and works on
+        any device.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== Feature Cards ==================== -->
+  <section class="features-section" id="features">
+    <div class="features-container">
+      <h2 class="section-title">Core Features</h2>
+      <div class="features-grid">
+        <article class="card">
+          <div class="card-icon">📈</div>
+          <h3>Internal Marks Predictor</h3>
+          <p>Estimate your semester marks based on your internal exam scores and assignments.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🎯</div>
+          <h3>CGPA Goal Planner</h3>
+          <p>Set a target CGPA and find out exactly what marks you need in each subject.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Coming Soon ==================== -->
+  <section class="coming-soon-section" id="coming-soon">
+    <div class="coming-soon-container">
+      <h2 class="section-title">Coming Soon</h2>
+      <div class="coming-soon-grid">
+        <div class="coming-soon-card">
+          <div class="card-icon">🧮</div>
+          <h3>Final Exam Marks Calculator</h3>
+          <p>Find out the minimum marks you need in finals to pass or hit your target grade.</p>
+        </div>
+        <div class="coming-soon-card">
+          <div class="card-icon">📋</div>
+          <h3>Student Dashboard</h3>
+          <p>A personal dashboard to track your progress, history, and academic milestones.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Footer ==================== -->
   <footer class="site-footer">
-    <p>&copy; 2026 GradePath – All rights reserved.</p>
+    <p>&copy; 2026 GradePath — All rights reserved.</p>
   </footer>
 
   <script src="script.js"></script>
