@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – GradePath</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- ==================== Navigation Bar ==================== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">📊</span> GradePath
+      </a>
+      <div class="nav-actions">
+        <span class="dashboard-user" id="dashboard-user">👋 Welcome!</span>
+        <a href="index.html" class="btn btn-outline" id="logout-btn">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== Dashboard Content ==================== -->
+  <section class="dashboard-hero">
+    <h1 class="section-title">Your Dashboard</h1>
+    <p class="dashboard-subtitle">This is a placeholder. Your academic tools will appear here soon!</p>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <h3>Internal Marks Predictor</h3>
+        <p>Coming soon — estimate your marks based on internals.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h3>CGPA Goal Planner</h3>
+        <p>Coming soon — set targets and plan your path.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧮</div>
+        <h3>Final Exam Calculator</h3>
+        <p>Coming soon — know what you need in finals.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 GradePath — All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Show the logged-in user's name (stored by auth.js)
+    var user = localStorage.getItem('gradepath_user');
+    if (user) {
+      document.getElementById('dashboard-user').textContent = '👋 Welcome, ' + user + '!';
+    }
+
+    // Logout – clear storage and go home
+    document.getElementById('logout-btn').addEventListener('click', function () {
+      localStorage.removeItem('gradepath_user');
+    });
+  </script>
+</body>
+
+</html>
