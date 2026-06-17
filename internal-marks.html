@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chitkara Grade Predictor – GradePath</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Predictor Specific Styles */
+    .predictor-container {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 0 1.5rem;
+      min-height: 60vh;
+    }
+
+    .predictor-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .predictor-badge {
+      display: inline-block;
+      background: rgba(79, 91, 213, 0.1);
+      color: var(--color-primary);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* Views container */
+    .view-section {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Grid for Year Selection */
+    .year-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin: 2rem auto 0;
+      max-width: 800px;
+    }
+
+    .year-card {
+      background: #f5fbf7;
+      border: 1px solid rgba(23, 45, 243, 0.15);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top border accents */
+    .year-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: #0824b0;
+      transition: transform 0.3s ease;
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+
+    .year-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(34, 47, 162, 0.1);
+      border-color: rgba(52, 73, 209, 0.3);
+    }
+
+    .year-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .year-number {
+      font-size: 5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      font-family: var(--font-body);
+      color: #3b56dc;
+    }
+
+    .year-title {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .year-desc {
+      font-size: 1.05rem;
+      color: var(--color-text-light);
+      max-width: 80%;
+      line-height: 1.6;
+    }
+
+    .year-arrow {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 2.5rem;
+      width: 48px;
+      height: 48px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      color: #3b56dc;
+    }
+
+    .year-card:hover .year-arrow {
+      transform: translateX(5px);
+      box-shadow: 0 6px 15px rgba(74, 77, 216, 0.2);
+      background: #3b56dc;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">📊</span> GradePath
+      </a>
+      <div class="nav-actions">
+        <a href="dashboard.html" class="btn btn-outline">Back to Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="predictor-container">
+
+    <!-- View 1: Year Selection -->
+    <section id="view-year" class="view-section active">
+      <div class="predictor-header">
+        <div class="predictor-badge">CHITKARA UNIVERSITY CSE</div>
+        <h1 class="section-title" style="margin-bottom: 0.5rem;">Select Your Year</h1>
+        <p class="dashboard-subtitle">Choose your current academic year to load the correct subjects and grading
+          criteria.</p>
+      </div>
+
+      <div class="year-grid">
+        <!-- 1st Year -->
+        <div class="year-card" onclick="selectYear(1)">
+          <div class="year-number">1</div>
+          <h2 class="year-title">1st Year Subjects</h2>
+          <p class="year-desc">Access grading criteria and calculate target marks for 1st Year courses.</p>
+          <div class="year-arrow">➔</div>
+        </div>
+
+        <!-- 2nd Year -->
+        <div class="year-card" onclick="selectYear(2)">
+          <div class="year-number">2</div>
+          <h2 class="year-title">2nd Year Subjects</h2>
+          <p class="year-desc">Access grading criteria and calculate target marks for 2nd Year courses.</p>
+          <div class="year-arrow">➔</div>
+        </div>
+
+        <!-- 3rd Year -->
+        <div class="year-card" onclick="selectYear(3)">
+          <div class="year-number">3</div>
+          <h2 class="year-title">3rd Year Subjects</h2>
+          <p class="year-desc">Access grading criteria and calculate target marks for 3rd Year courses.</p>
+          <div class="year-arrow">➔</div>
+        </div>
+
+        <!-- 4th Year -->
+        <div class="year-card" onclick="selectYear(4)">
+          <div class="year-number">4</div>
+          <h2 class="year-title">4th Year Subjects</h2>
+          <p class="year-desc">Access grading criteria and calculate target marks for 4th Year courses.</p>
+          <div class="year-arrow">➔</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Placeholder for View 2: Subject Selection (Will build next) -->
+    <section id="view-subject" class="view-section">
+      <div class="predictor-header">
+        <h1 class="section-title" style="margin-bottom: 0.5rem;">Select Your Subject</h1>
+        <p class="dashboard-subtitle">Choose the subject you want to predict your grades for.</p>
+        <button onclick="goBack('view-year')" class="btn btn-outline" style="margin-top: 1.5rem;">← Back to
+          Years</button>
+      </div>
+      <!-- Content added dynamically -->
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 GradePath — All rights reserved.</p>
+  </footer>
+
+  <script src="predictor.js"></script>
+</body>
+
+</html>
