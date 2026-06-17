@@ -1,10 +1,14 @@
-// Global State for the Chitkara Grade Predictor
+// ============================================================
+// predictor.js — Chitkara Grade Predictor Engine
+// ============================================================
+
+// Global State
 let state = {
   year: null,
   subject: null
 };
 
-// Helper function to generate premium initials for subjects
+// Helper: Generate initials from a subject name
 function getInitials(name) {
   const stopWords = ['and', 'of', 'using', 'for', 'the', 'in', 'on', 'at', 'to', 'a', 'an'];
   return name.split(/[\s-/]+/)
@@ -12,47 +16,39 @@ function getInitials(name) {
     .map(word => word.charAt(0))
     .join('')
     .toUpperCase()
-    .substring(0, 3); // Max 3 letters
+    .substring(0, 3);
 }
 
-// --- View Management ---
+// ===================== View Management =====================
 function showView(viewId) {
-  // Hide all views
   document.querySelectorAll('.view-section').forEach(el => {
     el.classList.remove('active');
   });
-  // Show target view
   const target = document.getElementById(viewId);
-  if (target) {
-    target.classList.add('active');
-  }
+  if (target) target.classList.add('active');
 }
 
 function goBack(viewId) {
   showView(viewId);
 }
 
-// --- Interactions ---
-
-// Called when a user clicks a Year card
+// ===================== Year Selection =====================
 function selectYear(year) {
   state.year = year;
-  console.log("Selected Year: ", year);
-  
-  // Render subjects for this year
+
   const gridContainer = document.getElementById('subject-grid-container');
-  gridContainer.innerHTML = ''; // Clear previous
+  gridContainer.innerHTML = '';
 
   const subjects = courseData[year] || [];
-  
+
   if (subjects.length === 0) {
-    gridContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-light);">No subjects found for this year yet.</p>`;
+    gridContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-light); padding: 2rem;">No subjects added for this year yet. You can add them in courseData.js.</p>`;
   } else {
     subjects.forEach(subject => {
       const card = document.createElement('div');
       card.className = 'subject-card';
       card.onclick = () => selectSubject(subject);
-      
+
       const initials = getInitials(subject.name);
       card.innerHTML = `
         <div class="subject-card-star">☆</div>
@@ -66,76 +62,69 @@ function selectYear(year) {
     });
   }
 
-  // Transition to the subject selection view
   showView('view-subject');
 }
 
-// Called when a user clicks a Subject card
+// ===================== Subject Selection =====================
 function selectSubject(subject) {
   state.subject = subject;
-  console.log("Selected Subject: ", subject);
 
-  // Update UI headers
+  // Update header
   document.getElementById('pred-subject-name').textContent = subject.name;
-  
-  // Set Sessional Test Weightage Badge
-  document.getElementById('st-weight-badge').textContent = `${subject.criteria.stMax}%`;
 
-  // Render FA input if it exists in criteria
-  const faContainer = document.getElementById('fa-input-container');
-  faContainer.innerHTML = '';
-  if (subject.criteria.faMax > 0) {
-    const faGroup = document.createElement('div');
-    faGroup.className = 'form-group';
-    faGroup.style.marginBottom = '1.5rem';
-    faGroup.innerHTML = `
-      <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--color-text);">Formative Assessments (Max ${subject.criteria.faMax})</label>
-      <input type="number" id="input-fa" placeholder="0" min="0" max="${subject.criteria.faMax}" step="0.5" class="form-input" style="width: 100%; border: 1px solid var(--color-border); border-radius: 8px; padding: 0.8rem; font-size: 1rem;" />
-    `;
-    faContainer.appendChild(faGroup);
-    
-    // Attach listener
-    document.getElementById('input-fa').addEventListener('input', calculateRequiredMarks);
+  // Update ST Weightage badge
+  document.getElementById('st-weight-badge').textContent = `${subject.stWeight}%`;
+
+  // ---- Render Extra Components (CE / FA) ----
+  const extrasContainer = document.getElementById('extras-container');
+  extrasContainer.innerHTML = '';
+
+  if (subject.extras && subject.extras.length > 0) {
+    const extrasHeading = document.createElement('label');
+    extrasHeading.style.cssText = 'display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--color-text);';
+    extrasHeading.textContent = 'Continuous Evaluations / Formative Assessments';
+    extrasContainer.appendChild(extrasHeading);
+
+    subject.extras.forEach(extra => {
+      const group = document.createElement('div');
+      group.className = 'extra-component-group';
+      group.innerHTML = `
+        <label>${extra.label} <span class="extra-weight-tag">${extra.weight}%</span></label>
+        <div class="extra-input-pair">
+          <input type="number" class="extra-obt" data-extra-id="${extra.id}" placeholder="Obt" min="0" step="0.5" />
+          <span style="color: var(--color-text-light);">/</span>
+          <input type="number" class="extra-max" data-extra-id="${extra.id}" placeholder="Max" min="1" value="25" />
+        </div>
+      `;
+      extrasContainer.appendChild(group);
+
+      // Attach live-calc listeners
+      group.querySelector('.extra-obt').addEventListener('input', calculateRequiredMarks);
+      group.querySelector('.extra-max').addEventListener('input', calculateRequiredMarks);
+    });
   }
 
-  // Render first default Sessional Test Row
+  // ---- Render first default ST row ----
   const stContainer = document.getElementById('st-list-container');
   stContainer.innerHTML = '';
-  
-  // We append one ST row by default
-  const defaultRow = document.createElement('div');
-  defaultRow.className = 'st-row';
-  defaultRow.innerHTML = `
-    <span class="st-row-label">ST 1</span>
-    <input type="number" placeholder="Obtained" class="st-row-input st-obt" min="0" step="0.5" />
-    <input type="number" placeholder="Max" class="st-row-input st-max-val" min="1" value="30" />
-    <button type="button" class="btn-remove-st" onclick="removeSTRow(this)">✕</button>
-  `;
-  stContainer.appendChild(defaultRow);
+  addSTRowToContainer(stContainer);
 
-  // Attach listeners to default ST row inputs
-  defaultRow.querySelector('.st-obt').addEventListener('input', calculateRequiredMarks);
-  defaultRow.querySelector('.st-max-val').addEventListener('input', calculateRequiredMarks);
-
-  // Set default End Term Paper Max
+  // ---- Set default End Term Paper Max ----
   const etPaperMaxInput = document.getElementById('input-et-paper-max');
-  etPaperMaxInput.value = 100; // Default paper max is 100
-  etPaperMaxInput.placeholder = subject.criteria.etMax;
+  etPaperMaxInput.value = 100;
 
-  // Clear previous output display
-  document.getElementById('req-et-score').textContent = `-- / 100`;
-  document.getElementById('calc-status').textContent = `Enter your marks to calculate.`;
+  // ---- Clear output ----
+  document.getElementById('req-et-score').textContent = '-- / 100';
+  document.getElementById('req-et-score').style.color = '#ffffff';
+  document.getElementById('calc-status').textContent = 'Enter your marks to calculate.';
 
-  // Transition to entry view
   showView('view-predictor');
 }
 
-// --- Dynamic ST Row Management ---
+// ===================== Dynamic ST Row Management =====================
 
-function addSTRow() {
-  const container = document.getElementById('st-list-container');
+function addSTRowToContainer(container) {
   const rowCount = container.children.length + 1;
-
   const row = document.createElement('div');
   row.className = 'st-row';
   row.innerHTML = `
@@ -144,151 +133,150 @@ function addSTRow() {
     <input type="number" placeholder="Max" class="st-row-input st-max-val" min="1" value="30" />
     <button type="button" class="btn-remove-st" onclick="removeSTRow(this)">✕</button>
   `;
-
   container.appendChild(row);
 
-  // Add event listeners to the new inputs for live calculation
   row.querySelector('.st-obt').addEventListener('input', calculateRequiredMarks);
   row.querySelector('.st-max-val').addEventListener('input', calculateRequiredMarks);
+}
 
-  // Re-index all rows to keep labels sequential
+function addSTRow() {
+  const container = document.getElementById('st-list-container');
+  addSTRowToContainer(container);
   reIndexSTRows();
-  
   calculateRequiredMarks();
 }
 
 function removeSTRow(btn) {
   const container = document.getElementById('st-list-container');
-  // Don't remove if it's the only row
   if (container.children.length <= 1) {
-    alert("At least one Sessional Test (ST) field is required.");
+    alert('At least one Sessional Test (ST) is required.');
     return;
   }
-
-  const row = btn.closest('.st-row');
-  row.remove();
-  
+  btn.closest('.st-row').remove();
   reIndexSTRows();
   calculateRequiredMarks();
 }
 
 function reIndexSTRows() {
-  const container = document.getElementById('st-list-container');
-  const rows = container.querySelectorAll('.st-row');
-  rows.forEach((row, index) => {
-    const label = row.querySelector('.st-row-label');
-    if (label) {
-      label.textContent = `ST ${index + 1}`;
-    }
+  const rows = document.querySelectorAll('#st-list-container .st-row');
+  rows.forEach((row, i) => {
+    row.querySelector('.st-row-label').textContent = `ST ${i + 1}`;
   });
 }
 
-// --- Calculation Logic ---
+// ===================== Calculation Logic =====================
 
-// Chitkara Grading thresholds (lower bounds)
+// Chitkara University Grading Thresholds (minimum % to achieve grade)
 const GRADE_THRESHOLDS = {
-  'O': 80,
+  'O':  80,
   'A+': 70,
-  'A': 60,
+  'A':  60,
   'B+': 55,
-  'B': 50,
-  'C': 45,
-  'P': 40
+  'B':  50,
+  'C':  45,
+  'P':  40
 };
 
 function calculateRequiredMarks() {
   if (!state.subject) return;
 
-  const faInput = document.getElementById('input-fa');
+  const subject = state.subject;
   const targetSelect = document.getElementById('select-target');
   const etPaperMaxInput = document.getElementById('input-et-paper-max');
-  
-  const faMax = state.subject.criteria.faMax;
-  const stWeight = state.subject.criteria.stMax; // Sessional overall weight (e.g. 40)
-  const etWeight = state.subject.criteria.etMax; // End Term overall weight (e.g. 60 or 50)
 
-  // 1. Read FA obtained
-  let faObt = 0;
-  if (faInput) {
-    faObt = parseFloat(faInput.value) || 0;
-    if (faObt > faMax) {
-      faObt = faMax;
-      faInput.value = faMax;
-    }
+  // ---- 1. Compute Extra Components (CE/FA) contribution ----
+  let extrasWeightedTotal = 0;
+  let extrasMaxWeight = 0;
+
+  if (subject.extras && subject.extras.length > 0) {
+    subject.extras.forEach(extra => {
+      const obtInput = document.querySelector(`.extra-obt[data-extra-id="${extra.id}"]`);
+      const maxInput = document.querySelector(`.extra-max[data-extra-id="${extra.id}"]`);
+
+      if (obtInput && maxInput) {
+        let obt = parseFloat(obtInput.value) || 0;
+        let max = parseFloat(maxInput.value) || 1;
+
+        // Clamp obtained to max
+        if (obt > max) {
+          obt = max;
+          obtInput.value = max;
+        }
+
+        extrasWeightedTotal += (obt / max) * extra.weight;
+        extrasMaxWeight += extra.weight;
+      }
+    });
   }
 
-  // 2. Read all ST rows and compute weighted sessional contribution
-  const stRows = document.querySelectorAll('.st-row');
+  // ---- 2. Compute Sessional Tests contribution ----
+  const stRows = document.querySelectorAll('#st-list-container .st-row');
   let sumObtST = 0;
   let sumMaxST = 0;
 
   stRows.forEach(row => {
-    const obtVal = parseFloat(row.querySelector('.st-obt').value) || 0;
-    const maxVal = parseFloat(row.querySelector('.st-max-val').value) || 30; // default 30 if blank
+    let obt = parseFloat(row.querySelector('.st-obt').value) || 0;
+    let max = parseFloat(row.querySelector('.st-max-val').value) || 30;
 
-    // Validate obtained <= max
-    let correctedObt = obtVal;
-    if (correctedObt > maxVal) {
-      correctedObt = maxVal;
-      row.querySelector('.st-obt').value = maxVal;
+    if (obt > max) {
+      obt = max;
+      row.querySelector('.st-obt').value = max;
     }
-    
-    sumObtST += correctedObt;
-    sumMaxST += maxVal;
+
+    sumObtST += obt;
+    sumMaxST += max;
   });
 
-  // Calculate weighted sessional score
   let weightedST = 0;
   if (sumMaxST > 0) {
-    weightedST = (sumObtST / sumMaxST) * stWeight;
+    weightedST = (sumObtST / sumMaxST) * subject.stWeight;
   }
 
-  // Total Internals
-  const totalInternals = faObt + weightedST;
+  // ---- 3. Total internals (out of stWeight + extrasMaxWeight) ----
+  const totalInternals = extrasWeightedTotal + weightedST;
+  const totalInternalsMax = extrasMaxWeight + subject.stWeight;
 
-  // 3. Compute Required End Term Weight
+  // ---- 4. Compute required End Term weighted marks ----
   const targetGrade = targetSelect.value;
   const targetMinTotal = GRADE_THRESHOLDS[targetGrade];
   const reqETWeight = targetMinTotal - totalInternals;
 
-  // Read End Term exam paper max marks
+  // ---- 5. Scale to actual paper marks ----
   let etPaperMax = parseFloat(etPaperMaxInput.value);
   if (isNaN(etPaperMax) || etPaperMax <= 0) {
-    etPaperMax = etWeight; // Fallback to criteria default weight
+    etPaperMax = 100; // Fallback
   }
 
-  // Scale the required weight to the actual paper size
+  const etWeight = subject.etWeight;
   const reqETPaper = (reqETWeight / etWeight) * etPaperMax;
 
+  // ---- 6. Update Result Display ----
   const scoreDisplay = document.getElementById('req-et-score');
   const statusDisplay = document.getElementById('calc-status');
+
+  const intSummary = `Weighted internals: <strong>${totalInternals.toFixed(1)} / ${totalInternalsMax}</strong>`;
 
   if (reqETWeight <= 0) {
     scoreDisplay.textContent = `0 / ${etPaperMax}`;
     scoreDisplay.style.color = '#ffffff';
-    statusDisplay.innerHTML = `Weighted internals: <strong>${totalInternals.toFixed(1)} / ${faMax + stWeight}</strong>.<br>You need <strong>0</strong> marks in the End Term to get an <strong>${targetGrade}</strong>! 🎉`;
+    statusDisplay.innerHTML = `${intSummary}.<br>You already have enough marks for a <strong>${targetGrade}</strong>! 🎉`;
   } else if (reqETWeight > etWeight) {
     scoreDisplay.textContent = `Impossible`;
     scoreDisplay.style.color = '#ffccd5';
-    statusDisplay.innerHTML = `Weighted internals: <strong>${totalInternals.toFixed(1)} / ${faMax + stWeight}</strong>.<br>Even scoring a perfect ${etPaperMax}/${etPaperMax} in the End Term won't reach the <strong>${targetGrade}</strong> target. Try aiming for another grade.`;
+    statusDisplay.innerHTML = `${intSummary}.<br>Even a perfect End Term score won't reach <strong>${targetGrade}</strong>. Try a lower target grade.`;
   } else {
-    // Round to 1 decimal place if needed
     const displayReq = Number.isInteger(reqETPaper) ? reqETPaper : reqETPaper.toFixed(1);
     scoreDisplay.textContent = `${displayReq} / ${etPaperMax}`;
     scoreDisplay.style.color = '#ffffff';
-    statusDisplay.innerHTML = `Weighted internals: <strong>${totalInternals.toFixed(1)} / ${faMax + stWeight}</strong>.<br>You need to score at least <strong>${displayReq}</strong> out of ${etPaperMax} in your End Term Exam to get a <strong>${targetGrade}</strong>.`;
+    statusDisplay.innerHTML = `${intSummary}.<br>You need at least <strong>${displayReq}</strong> out of ${etPaperMax} in the End Term to get a <strong>${targetGrade}</strong>.`;
   }
 }
 
-// Attach Event Listeners for Calculation
+// ===================== Global Event Listeners =====================
 document.addEventListener('DOMContentLoaded', () => {
   const selectTarget = document.getElementById('select-target');
-  if (selectTarget) {
-    selectTarget.addEventListener('change', calculateRequiredMarks);
-  }
+  if (selectTarget) selectTarget.addEventListener('change', calculateRequiredMarks);
 
   const etPaperMaxInput = document.getElementById('input-et-paper-max');
-  if (etPaperMaxInput) {
-    etPaperMaxInput.addEventListener('input', calculateRequiredMarks);
-  }
+  if (etPaperMaxInput) etPaperMaxInput.addEventListener('input', calculateRequiredMarks);
 });

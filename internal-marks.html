@@ -305,6 +305,53 @@
       background: rgba(233, 30, 99, 0.08);
       color: #c2185b;
     }
+
+    /* Extra component (CE/FA) input rows */
+    .extra-component-group {
+      background: #f8f9fc;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeInRow 0.25s ease;
+    }
+
+    .extra-component-group label {
+      font-weight: 500;
+      color: var(--color-text);
+      font-size: 0.95rem;
+      flex: 1.5;
+      line-height: 1.4;
+    }
+
+    .extra-component-group .extra-input-pair {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .extra-component-group input {
+      width: 70px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .extra-weight-tag {
+      background: rgba(59, 86, 220, 0.08);
+      color: #3b56dc;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
   </style>
 </head>
 
@@ -393,8 +440,8 @@
           <div class="form-inputs-container">
             <h3 style="margin-bottom: 1.5rem; font-family: var(--font-heading); color: var(--color-text);">Enter Obtained Marks</h3>
             
-            <!-- FA input container (dynamic) -->
-            <div id="fa-input-container"></div>
+            <!-- Extra Components (CE/FA) — dynamically populated per subject -->
+            <div id="extras-container"></div>
 
             <!-- ST List Section (dynamic) -->
             <div class="form-group" style="margin-bottom: 1.5rem;">
