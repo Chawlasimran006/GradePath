@@ -77,10 +77,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // If everything is valid → simulate login
       if (valid) {
-        // Store user identifier so the dashboard can greet them
-        localStorage.setItem('gradepath_user', emailField.value.trim());
-        // Redirect to dashboard
-        window.location.href = 'dashboard.html';
+        var inputVal = emailField.value.trim().toLowerCase();
+        var existingUsers = JSON.parse(localStorage.getItem('gradepath_users') || '[]');
+        var foundUser = null;
+        for (var i = 0; i < existingUsers.length; i++) {
+          var u = existingUsers[i];
+          if ((u.email && u.email.toLowerCase() === inputVal) || (u.roll && u.roll.toLowerCase() === inputVal)) {
+            foundUser = u;
+            break;
+          }
+        }
+
+        if (foundUser) {
+          // Store actual user name so dashboard can greet them
+          localStorage.setItem('gradepath_user', foundUser.name);
+          window.location.href = 'dashboard.html';
+        } else {
+          showError('login-email-error', 'Account not found. Please check your credentials or sign up.');
+        }
       }
     });
   }
@@ -120,6 +134,14 @@ document.addEventListener('DOMContentLoaded', function () {
       } else if (!isValidEmail(emailField.value.trim())) {
         showError('signup-email-error', 'Please enter a valid email (e.g. name@college.edu).');
         valid = false;
+      } else {
+        var existingUsers = JSON.parse(localStorage.getItem('gradepath_users') || '[]');
+        var emailInput = emailField.value.trim().toLowerCase();
+        var exists = existingUsers.some(function(u) { return u.email.toLowerCase() === emailInput; });
+        if (exists) {
+          showError('signup-email-error', 'An account with this email already exists.');
+          valid = false;
+        }
       }
 
       // 3. Roll Number – required
@@ -148,6 +170,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // If everything is valid → simulate account creation
       if (valid) {
+        var existingUsers = JSON.parse(localStorage.getItem('gradepath_users') || '[]');
+        existingUsers.push({
+          name: nameField.value.trim(),
+          email: emailField.value.trim(),
+          roll: rollField.value.trim()
+        });
+        localStorage.setItem('gradepath_users', JSON.stringify(existingUsers));
+
         localStorage.setItem('gradepath_user', nameField.value.trim());
         // Redirect to dashboard
         window.location.href = 'dashboard.html';

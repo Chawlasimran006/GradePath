@@ -547,7 +547,8 @@ img {
 }
 
 .password-wrapper input {
-  padding-right: 2.8rem;   /* make room for the toggle icon */
+  padding-right: 2.8rem;
+  /* make room for the toggle icon */
 }
 
 .toggle-password {
