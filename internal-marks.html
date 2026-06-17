@@ -150,6 +150,161 @@
       background: #3b56dc;
       color: white;
     }
+
+    /* Subject Selection view styles */
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .subject-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+      border-color: rgba(59, 86, 220, 0.3);
+    }
+
+    .subject-initials-badge {
+      width: 56px;
+      height: 56px;
+      background: rgba(59, 86, 220, 0.08);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3b56dc;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(59, 86, 220, 0.15);
+    }
+
+    .subject-card:hover .subject-initials-badge {
+      background: #3b56dc;
+      color: white;
+      transform: scale(1.05);
+      border-color: #3b56dc;
+    }
+
+    .subject-info {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .subject-name {
+      font-weight: 600;
+      color: var(--color-text);
+      font-size: 1.05rem;
+      margin-bottom: 0.25rem;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    .subject-action {
+      font-size: 0.85rem;
+      color: var(--color-text-light);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      text-align: left;
+    }
+
+    .subject-card:hover .subject-action {
+      color: #3b56dc;
+    }
+
+    .subject-card-star {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      color: #e0e0e0;
+      font-size: 0.9rem;
+    }
+
+    .subject-card:hover .subject-card-star {
+      color: #ffd700;
+    }
+
+    /* Predictor styling grid */
+    .predictor-form-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .predictor-form-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    /* Dynamic ST Row styles */
+    .st-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      animation: fadeInRow 0.25s ease;
+    }
+
+    @keyframes fadeInRow {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .st-row-input {
+      flex: 1;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-size: 1rem;
+    }
+
+    .st-row-label {
+      font-weight: 600;
+      color: var(--color-text);
+      min-width: 50px;
+      font-size: 0.95rem;
+    }
+
+    .btn-remove-st {
+      background: none;
+      border: none;
+      color: #e91e63;
+      cursor: pointer;
+      font-size: 1.3rem;
+      padding: 0.2rem 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      border-radius: 6px;
+    }
+
+    .btn-remove-st:hover {
+      background: rgba(233, 30, 99, 0.08);
+      color: #c2185b;
+    }
   </style>
 </head>
 
@@ -211,15 +366,84 @@
       </div>
     </section>
 
-    <!-- Placeholder for View 2: Subject Selection (Will build next) -->
+    <!-- View 2: Subject Selection -->
     <section id="view-subject" class="view-section">
       <div class="predictor-header">
         <h1 class="section-title" style="margin-bottom: 0.5rem;">Select Your Subject</h1>
         <p class="dashboard-subtitle">Choose the subject you want to predict your grades for.</p>
-        <button onclick="goBack('view-year')" class="btn btn-outline" style="margin-top: 1.5rem;">← Back to
-          Years</button>
+        <button onclick="goBack('view-year')" class="btn btn-outline" style="margin-top: 1.5rem;">← Back to Years</button>
       </div>
-      <!-- Content added dynamically -->
+      <div id="subject-grid-container" class="subject-grid">
+        <!-- Dynamic Content -->
+      </div>
+    </section>
+
+    <!-- View 3: Marks Entry & Target Predictor -->
+    <section id="view-predictor" class="view-section">
+      <div class="predictor-header">
+        <h1 class="section-title" id="pred-subject-name" style="margin-bottom: 0.5rem;">Subject Name</h1>
+        <p class="dashboard-subtitle">Enter your internal marks and choose your target grade to see the required End Term marks.</p>
+        <button onclick="goBack('view-subject')" class="btn btn-outline" style="margin-top: 1.5rem;">← Back to Subjects</button>
+      </div>
+
+      <div class="predictor-card" style="margin-top: 2rem;">
+        <div class="predictor-form-grid">
+          
+          <!-- Left: Input Form -->
+          <div class="form-inputs-container">
+            <h3 style="margin-bottom: 1.5rem; font-family: var(--font-heading); color: var(--color-text);">Enter Obtained Marks</h3>
+            
+            <!-- FA input container (dynamic) -->
+            <div id="fa-input-container"></div>
+
+            <!-- ST List Section (dynamic) -->
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--color-text);">
+                Sessional Tests (STs) — Overall Weightage: <span id="st-weight-badge" style="font-weight: 600; color: #3b56dc;">40%</span>
+              </label>
+              <div id="st-list-container">
+                <!-- Sessional rows will be added here -->
+              </div>
+              <button type="button" onclick="addSTRow()" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem; margin-top: 0.5rem; border-color: rgba(59, 86, 220, 0.3); color: #3b56dc;">
+                + Add Sessional Test (ST)
+              </button>
+            </div>
+
+            <!-- End Term paper settings -->
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--color-text);">
+                End Term Exam Max Marks (Paper Max)
+              </label>
+              <input type="number" id="input-et-paper-max" placeholder="100" min="1" class="form-input" style="width: 100%; border: 1px solid var(--color-border); border-radius: 8px; padding: 0.8rem; font-size: 1rem;" />
+              <small style="color: var(--color-text-light); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                Enter the total marks of the actual End Term exam paper (e.g. 100, 50, or 60).
+              </small>
+            </div>
+
+            <!-- Target Grade Select -->
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--color-text);">Target Grade</label>
+              <select id="select-target" class="form-input" style="width: 100%; border: 1px solid var(--color-border); border-radius: 8px; padding: 0.8rem; font-size: 1rem; background: white; cursor: pointer;">
+                <option value="O">O (Outstanding: 80% - 100%)</option>
+                <option value="A+">A+ (Excellent: 70% - 79%)</option>
+                <option value="A" selected>A (Very Good: 60% - 69%)</option>
+                <option value="B+">B+ (Good: 55% - 59%)</option>
+                <option value="B">B (Above Average: 50% - 54%)</option>
+                <option value="C">C (Average: 45% - 49%)</option>
+                <option value="P">P (Pass: 40% - 44%)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Right: Calculator Result -->
+          <div class="result-card" style="margin-top: 0; min-height: 250px; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(135deg, #3b56dc 0%, #6f86f7 100%); box-shadow: 0 10px 25px rgba(59, 86, 220, 0.25); border-radius: 16px; padding: 2rem; color: white; text-align: center;">
+            <div class="result-title" style="font-size: 1.2rem; opacity: 0.9;">Required in End Term Exam</div>
+            <div class="result-score" id="req-et-score" style="font-size: 3.5rem; font-weight: 800; margin: 1rem 0;">-- / 50</div>
+            <div class="result-percentage" id="calc-status" style="font-size: 1rem; font-weight: 500; line-height: 1.5; background: none; padding: 0; border-radius: 0; display: block;">Enter marks to calculate.</div>
+          </div>
+
+        </div>
+      </div>
     </section>
 
   </main>
@@ -228,6 +452,7 @@
     <p>&copy; 2026 GradePath — All rights reserved.</p>
   </footer>
 
+  <script src="courseData.js"></script>
   <script src="predictor.js"></script>
 </body>
 
